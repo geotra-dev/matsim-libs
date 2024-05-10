@@ -57,14 +57,10 @@ public class RunSignalSystemsExample {
 			config = ConfigUtils.loadConfig(args[0]);
 		}
 			
-		run(config, true); // The run method is extracted so that a test can operate on it.
+		run(config, false); // The run method is extracted so that a test can operate on it.
 	}
 	
 	public static void run(Config config, boolean visualize) {
-		// adjustments for live visualization
-		OTFVisConfigGroup otfvisConfig = ConfigUtils.addOrGetModule(config, OTFVisConfigGroup.class);
-		otfvisConfig.setDrawTime(true);
-		config.qsim().setSnapshotStyle(QSimConfigGroup.SnapshotStyle.withHoles);
 		
 		// --- create the scenario
 		Scenario scenario = ScenarioUtils.loadScenario(config);
@@ -77,11 +73,6 @@ public class RunSignalSystemsExample {
 //		c.addOverridingModule(new SignalsModule());
 		Signals.configure( c ) ;
 
-		// add live visualization module
-		if (visualize) {
-			c.addOverridingModule(new OTFVisWithSignalsLiveModule());
-		}
-		
 		// --- run the simulation
 		c.run();
 	}
