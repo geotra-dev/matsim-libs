@@ -40,6 +40,14 @@ import org.matsim.core.scoring.functions.ScoringParameters;
 
 import javax.inject.Inject;
 
+import org.matsim.core.controler.AbstractModule;
+import jakarta.inject.Provider;
+
+import org.matsim.core.replanning.PlanStrategy;
+import org.matsim.core.replanning.PlanStrategyImpl;
+
+import org.matsim.contrib.cadyts.general.CadytsPlanChanger;
+
 /**
  * Script-in-java to include cadyts into a matsim run.
  * <p></p>
@@ -80,6 +88,23 @@ public class RunCadyts4CarExample {
 				return scoringFunctionAccumulator;
 			}
 		}) ;
+
+
+		controler.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                addPlanStrategyBinding("CadytsPlanChanger").toProvider(new Provider<PlanStrategy>() {
+                    @Inject Scenario scenario;
+                    @Inject CadytsContext cadytsContext;
+
+                    @Override
+                    public PlanStrategy get() {
+                        // Binds the CadytsPlanChanger strategy into the replanning
+                        return new PlanStrategyImpl(new CadytsPlanChanger(scenario, cadytsContext));
+                    }
+                });
+            }
+        });
 
 		
 		controler.run() ;
