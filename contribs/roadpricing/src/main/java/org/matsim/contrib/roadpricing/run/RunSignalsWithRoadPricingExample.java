@@ -16,7 +16,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.run;
+package org.matsim.contrib.roadpricing.run;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.roadpricing.RoadPricing;
@@ -25,11 +25,16 @@ import org.matsim.contrib.roadpricing.RoadPricingUtils;
 import org.matsim.contrib.signals.builder.Signals;
 import org.matsim.contrib.signals.data.SignalsData;
 import org.matsim.contrib.signals.data.SignalsDataLoader;
+import org.matsim.contrib.signals.SignalSystemsConfigGroup;
+import org.matsim.contrib.roadpricing.RoadPricingConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.config.groups.ControlerConfigGroup;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.QSimConfigGroup;
 
 /**
  * Example showing how to run MATSim with both signals and road pricing modules.
@@ -83,33 +88,35 @@ public class RunSignalsWithRoadPricingExample {
 		Config config = ConfigUtils.createConfig();
 		
 		// Basic configuration
-		config.controller().setLastIteration(10);
-		config.controller().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-		config.controller().setOutputDirectory("output/signalsWithRoadPricing/");
+		ControlerConfigGroup controllerConfig = (ControlerConfigGroup) config.getModule(ControlerConfigGroup.GROUP_NAME);
+		controllerConfig.setLastIteration(10);
+		controllerConfig.setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+		controllerConfig.setOutputDirectory("output/signalsWithRoadPricing/");
 		
 		// Network and population files (adjust paths as needed)
 		config.network().setInputFile("network.xml");
 		config.plans().setInputFile("population.xml");
 		
 		// Signals configuration
-		ConfigUtils.addOrGetModule(config, Signals.SIGNAL_CONFIG_GROUP, Signals.SignalSystemsConfigGroup.class)
-			.setSignalSystemFile("signalSystems.xml");
-		ConfigUtils.addOrGetModule(config, Signals.SIGNAL_CONFIG_GROUP, Signals.SignalSystemsConfigGroup.class)
-			.setSignalGroupsFile("signalGroups.xml");
-		ConfigUtils.addOrGetModule(config, Signals.SIGNAL_CONFIG_GROUP, Signals.SignalSystemsConfigGroup.class)
-			.setSignalControlFile("signalControl.xml");
+		SignalSystemsConfigGroup signalsConfig = ConfigUtils.addOrGetModule(config, SignalSystemsConfigGroup.GROUP_NAME, SignalSystemsConfigGroup.class);
+		signalsConfig.setSignalSystemFile("signalSystems.xml");
+		signalsConfig.setSignalGroupsFile("signalGroups.xml");
+		signalsConfig.setSignalControlFile("signalControl.xml");
 		
 		// Road pricing configuration
-		RoadPricingUtils.createConfigGroup(config)
-			.setTollLinksFile("tollLinks.xml");
+		RoadPricingConfigGroup roadPricingConfig = ConfigUtils.addOrGetModule(config, RoadPricingConfigGroup.class);
+		roadPricingConfig.setTollLinksFile("tollLinks.xml");
 		
 		// QSim configuration
-		config.qsim().setEndTime(24 * 3600);
-		config.qsim().setSnapshotPeriod(300);
+		QSimConfigGroup qsimConfig = (QSimConfigGroup) config.getModule(QSimConfigGroup.GROUP_NAME);
+		qsimConfig.setEndTime(24 * 3600);
+		qsimConfig.setSnapshotPeriod(300);
 		
 		// Scoring configuration (important for road pricing)
-		config.scoring().getModes().get("car").setMarginalUtilityOfTraveling(-6.0);
-		config.scoring().setMarginalUtilityOfMoney(1.0);
+		PlanCalcScoreConfigGroup scoringConfig = (PlanCalcScoreConfigGroup) config.getModule("planCalcScore");
+		PlanCalcScoreConfigGroup.ModeParams carModeParams = scoringConfig.getOrCreateModeParams("car");
+		carModeParams.setMarginalUtilityOfTraveling(-6.0);
+		scoringConfig.setMarginalUtilityOfMoney(1.0);
 		
 		return config;
 	}
