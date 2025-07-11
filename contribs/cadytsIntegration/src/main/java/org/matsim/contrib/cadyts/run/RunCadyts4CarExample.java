@@ -41,7 +41,7 @@ import org.matsim.core.scoring.functions.ScoringParameters;
 import javax.inject.Inject;
 
 import org.matsim.core.controler.AbstractModule;
-import jakarta.inject.Provider;
+import com.google.inject.Provider;
 
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
