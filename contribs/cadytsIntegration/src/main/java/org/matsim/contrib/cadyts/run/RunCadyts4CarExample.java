@@ -40,6 +40,14 @@ import org.matsim.core.scoring.functions.ScoringParameters;
 
 import javax.inject.Inject;
 
+import org.matsim.core.controler.AbstractModule;
+import com.google.inject.Provider;
+
+import org.matsim.core.replanning.PlanStrategy;
+import org.matsim.core.replanning.PlanStrategyImpl;
+
+import org.matsim.contrib.cadyts.general.CadytsPlanChanger;
+
 /**
  * Script-in-java to include cadyts into a matsim run.
  * <p></p>
@@ -74,12 +82,29 @@ public class RunCadyts4CarExample {
 				scoringFunctionAccumulator.addScoringFunction(new CharyparNagelAgentStuckScoring(params));
 
 				final CadytsScoring<Link> scoringFunction = new CadytsScoring<>(person.getSelectedPlan(), config, cadytsContext);
-				scoringFunction.setWeightOfCadytsCorrection(30. * config.planCalcScore().getBrainExpBeta()) ;
+				scoringFunction.setWeightOfCadytsCorrection(1000000. * config.planCalcScore().getBrainExpBeta()) ;
 				scoringFunctionAccumulator.addScoringFunction(scoringFunction );
 
 				return scoringFunctionAccumulator;
 			}
 		}) ;
+
+
+		controler.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                addPlanStrategyBinding("CadytsPlanChanger").toProvider(new Provider<PlanStrategy>() {
+                    @Inject Scenario scenario;
+                    @Inject CadytsContext cadytsContext;
+
+                    @Override
+                    public PlanStrategy get() {
+                        // Binds the CadytsPlanChanger strategy into the replanning
+                        return new PlanStrategyImpl(new CadytsPlanChanger(scenario, cadytsContext));
+                    }
+                });
+            }
+        });
 
 		
 		controler.run() ;
