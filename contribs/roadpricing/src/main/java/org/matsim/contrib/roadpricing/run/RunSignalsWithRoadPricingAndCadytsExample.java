@@ -75,10 +75,7 @@ public class RunSignalsWithRoadPricingAndCadytsExample {
 			// Use example config - you'll need to adjust paths for your scenario
 			config = createExampleConfig();
 		} else {
-			config = ConfigUtils.loadConfig(args[0], 
-				new CadytsConfigGroup(),
-				new SignalSystemsConfigGroup(),
-				new RoadPricingConfigGroup());
+			config = ConfigUtils.loadConfig(args[0], new CadytsConfigGroup());
 		}
 
 		// Run the simulation
