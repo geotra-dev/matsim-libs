@@ -92,6 +92,7 @@
 		<module>freight</module>
 		<module>hybridsim</module>
 		<module>integration</module>
+		<module>integration-examples</module>
 		<module>locationchoice</module>
 		<module>matrixbasedptrouter</module>
 		<module>minibus</module>
