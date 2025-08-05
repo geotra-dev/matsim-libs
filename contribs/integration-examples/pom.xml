@@ -6,9 +6,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.matsim.contrib</groupId>
-	<artifactId>integration-examples</artifactId>
-	<name>integration-examples</name>
-	<description>Integration examples for multiple MATSim contribs</description>
+	<artifactId>geotra-integration</artifactId>
+	<name>geotra-integration</name>
+	<description>Geotra integration for multiple MATSim contribs</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
