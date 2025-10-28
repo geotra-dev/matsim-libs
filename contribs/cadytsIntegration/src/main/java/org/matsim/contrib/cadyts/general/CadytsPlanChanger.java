@@ -35,7 +35,7 @@ import java.util.Map;
 public class CadytsPlanChanger<T> implements PlanSelector<Plan, Person> {
 
 	private final double beta ;
-	private double cadytsWeight = 1000000.0;
+	private double cadytsWeight = 1000.0;
 
 	private CadytsContextI<T> cadytsContext;
 
